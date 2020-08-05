@@ -1,0 +1,54 @@
+{% extends "tasks/base.html" %} {% block body %} {% load crispy_forms_tags %} {% load bootstrap4 %} {% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %} {{ task_form.media }}
+<div class="row justify-content-center update-task-wrap">
+    <div class="col-12 col-md-6 p-5 form-container">
+        <div class="text-center"><h5 class="project-title">{{ project.title }}</h5></div>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">{{ task_form|crispy }}</div>
+            <button type="submit" class="btn btn-info">Save</button>
+        </form>
+    </div>
+    <div class="col-12 col-md-4 p-5 comments-container">
+        {% for comment in comments %}
+        <div class="d-flex comment-author">
+            <img
+                class="rounded-circle mr-2"
+                width="30"
+                height="30"
+                src="{{ comment.commenter.profile.profile_img.url }}"
+                title="{{ comment.commenter.username }}"
+            />
+            <div class="flex-grow-1">
+                {{ comment.commenter.username }}
+            </div>
+        </div>
+        <div class="comment-content">{{ comment.content }}</div>
+        {% endfor %}
+        <div>
+            {% csrf_token %}
+            <div class="form-group row">
+                <label for="js-add-comment" class="col-sm-2 col-form-label">
+                    <img
+                        class="rounded-circle mr-2"
+                        width="30"
+                        height="30"
+                        src="{{ user.profile.profile_img.url }}"
+                        title="{{ user.username  }}"
+                /></label>
+                <div class="col-sm-10">
+                    <input
+                        id="js-add-comment"
+                        class="form-control"
+                        data-taskid="{{ task_id }}"
+                        type="text"
+                        name="content"
+                        placeholder="Post a comment or an update..."
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,517 @@
+{% extends "tasks/base.html" %} {% block body %}
+<div class="row justify-content-center">
+    <main class="col-md-10 main">
+        <div class="project-header border-bottom">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <div>
+                        <h5 class="project-title">
+                            {{ project.title }}
+                            <div class="dropdown">
+                                <div class="card-dropdownButton" id="dropdownMenuButton" data-toggle="dropdown">
+                                    <svg
+                                        width="1em"
+                                        height="1em"
+                                        viewBox="0 0 16 16"
+                                        class="bi bi-chevron-compact-down"
+                                        fill="currentColor"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M1.553 6.776a.5.5 0 0 1 .67-.223L8 9.44l5.776-2.888a.5.5 0 1 1 .448.894l-6 3a.5.5 0 0 1-.448 0l-6-3a.5.5 0 0 1-.223-.67z"
+                                        />
+                                    </svg>
+                                </div>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a
+                                        class="dropdown-item"
+                                        data-projectid="{{ project.id }}"
+                                        href="{% url 'update-project' project.id %}"
+                                        >Edit project details</a
+                                    >
+                                    <form method="POST" action="{% url 'delete-project' project.id %}">
+                                        {% csrf_token %}
+                                        <button
+                                            type="submit"
+                                            class="dropdown-item text-danger js-project-delete"
+                                            data-projectid="{{ project.id }}"
+                                        >
+                                            Delete project
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    {% for user in project.members.all %}
+                    <img class="rounded-circle" src="{{ user.profile.profile_img.url }}" title="{{ user.username }}" />
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 py-3 text-center">
+                    {{ project.description }}
+                </div>
+            </div>
+        </div>
+        <div class="row p-3">
+            <div class="col-12 col-md-4">
+                <div class="card border-0">
+                    <h5 class="card-header px-0 border-0">
+                        To Do
+                    </h5>
+                    <div class="js-add-task" data-status="T" data-projectid="{{ project.id }}">
+                        <svg
+                            class="bi bi-plus"
+                            width="1.5em"
+                            height="1.5em"
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M8 3.5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H4a.5.5 0 0 1 0-1h3.5V4a.5.5 0 0 1 .5-.5z"
+                            />
+                            <path
+                                fill-rule="evenodd"
+                                d="M7.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0V8z"
+                            />
+                        </svg>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul id="todo" class="list-group">
+                            {% for task in todos reversed %}
+                            <li class="list-group-item task-card d-flex">
+                                <a class="card-content" href="{% url 'update-task' task.id %}">
+                                    <div class="card-nameAndDropdownMenu">
+                                        <div class="card-name">{{ task.title }}</div>
+                                    </div>
+                                    <div class="card-metaData">
+                                        <div class="card-assigneeAndDueDate">
+                                            <div class="card-assignee">
+                                                {% if task.assignee %}
+                                                <img
+                                                    class="rounded-circle"
+                                                    width="20"
+                                                    height="20"
+                                                    src="{{ task.assignee.profile.profile_img.url }}"
+                                                    title="{{ task.assignee.username }}"
+                                                />
+                                                {% else %}
+                                                <svg
+                                                    class="bi bi-person-circle"
+                                                    width="1em"
+                                                    height="1em"
+                                                    viewBox="0 0 16 16"
+                                                    fill="currentColor"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path
+                                                        d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z"
+                                                    />
+                                                    <path fill-rule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"
+                                                    />
+                                                </svg>
+                                                {% endif %}
+                                            </div>
+                                            <div class="card-dueDate">
+                                                {% if task.due_date %} {{ task.due_date|date:"M d" }} {% else %}
+                                                <svg
+                                                    class="bi bi-calendar2-plus"
+                                                    width="1em"
+                                                    height="1em"
+                                                    viewBox="0 0 16 16"
+                                                    fill="currentColor"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M8 8a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H6a.5.5 0 0 1 0-1h1.5V8.5A.5.5 0 0 1 8 8z"
+                                                    />
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M7.5 10.5A.5.5 0 0 1 8 10h2a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0v-2z"
+                                                    />
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M14 2H2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zM2 1a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2z"
+                                                    />
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M3.5 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5zm9 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5z"
+                                                    />
+                                                    <path
+                                                        d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"
+                                                    />
+                                                </svg>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="card-actions">
+                                    <div class="dropdown">
+                                        <div
+                                            class="card-dropdownButton float-right"
+                                            id="dropdownMenuButton"
+                                            data-toggle="dropdown"
+                                        >
+                                            <svg
+                                                class="bi bi-three-dots"
+                                                width="1em"
+                                                height="1em"
+                                                viewBox="0 0 16 16"
+                                                fill="currentColor"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a
+                                                class="dropdown-item js-status-update"
+                                                data-taskid="{{ task.id }}"
+                                                data-status="P"
+                                                href=""
+                                                >In Progress</a
+                                            >
+                                            <a
+                                                class="dropdown-item js-status-update"
+                                                data-taskid="{{ task.id }}"
+                                                data-status="D"
+                                                href=""
+                                                >Done</a
+                                            >
+                                            <div class="dropdown-divider"></div>
+                                            <a
+                                                class="dropdown-item text-danger js-task-delete"
+                                                data-taskid="{{ task.id }}"
+                                                href=""
+                                                >Delete</a
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card border-0">
+                    <h5 class="card-header px-0 border-0">
+                        In Progress
+                    </h5>
+                    <div class="js-add-task" data-status="P" data-projectid="{{ project.id }}">
+                        <svg
+                            class="bi bi-plus"
+                            width="1.5em"
+                            height="1.5em"
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M8 3.5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H4a.5.5 0 0 1 0-1h3.5V4a.5.5 0 0 1 .5-.5z"
+                            />
+                            <path
+                                fill-rule="evenodd"
+                                d="M7.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0V8z"
+                            />
+                        </svg>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul id="progress" data-status="progress" class="list-group">
+                            {% for task in in_progress reversed %}
+                            <li class="list-group-item task-card d-flex">
+                                <a class="card-content" href="{% url 'update-task' task.id %}">
+                                    <div class="card-nameAndDropdownMenu">
+                                        <div class="card-name">{{ task.title }}</div>
+                                    </div>
+                                    <div class="card-metaData">
+                                        <div class="card-assigneeAndDueDate">
+                                            <div class="card-assignee">
+                                                {% if task.assignee %}
+                                                <img
+                                                    class="rounded-circle"
+                                                    width="20"
+                                                    height="20"
+                                                    src="{{ task.assignee.profile.profile_img.url }}"
+                                                    title="{{ task.assignee.username}}"
+                                                />
+                                                {% else %}
+                                                <svg
+                                                    class="bi bi-person-circle"
+                                                    width="1em"
+                                                    height="1em"
+                                                    viewBox="0 0 16 16"
+                                                    fill="currentColor"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path
+                                                        d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z"
+                                                    />
+                                                    <path fill-rule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"
+                                                    />
+                                                </svg>
+                                                {% endif %}
+                                            </div>
+                                            <div class="card-dueDate">
+                                                {% if task.due_date %} {{ task.due_date|date:"M d" }} {% else %}
+                                                <svg
+                                                    class="bi bi-calendar2-plus"
+                                                    width="1em"
+                                                    height="1em"
+                                                    viewBox="0 0 16 16"
+                                                    fill="currentColor"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M8 8a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H6a.5.5 0 0 1 0-1h1.5V8.5A.5.5 0 0 1 8 8z"
+                                                    />
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M7.5 10.5A.5.5 0 0 1 8 10h2a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0v-2z"
+                                                    />
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M14 2H2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zM2 1a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2z"
+                                                    />
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M3.5 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5zm9 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5z"
+                                                    />
+                                                    <path
+                                                        d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"
+                                                    />
+                                                </svg>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="card-actions">
+                                    <div class="dropdown">
+                                        <div
+                                            class="card-dropdownButton float-right"
+                                            id="dropdownMenuButton"
+                                            data-toggle="dropdown"
+                                        >
+                                            <svg
+                                                class="bi bi-three-dots"
+                                                width="1em"
+                                                height="1em"
+                                                viewBox="0 0 16 16"
+                                                fill="currentColor"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a
+                                                class="dropdown-item js-status-update"
+                                                data-taskid="{{ task.id }}"
+                                                data-status="T"
+                                                href=""
+                                                >Todo</a
+                                            >
+                                            <a
+                                                class="dropdown-item js-status-update"
+                                                data-taskid="{{ task.id }}"
+                                                data-status="D"
+                                                href=""
+                                                >Done</a
+                                            >
+                                            <div class="dropdown-divider"></div>
+                                            <a
+                                                class="dropdown-item text-danger js-task-delete"
+                                                data-taskid="{{ task.id }}"
+                                                href=""
+                                                >Delete</a
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card border-0">
+                    <h5 class="card-header px-0 border-0">
+                        Done
+                    </h5>
+                    <div class="js-add-task" data-status="D" data-projectid="{{ project.id }}">
+                        <svg
+                            class="bi bi-plus"
+                            width="1.5em"
+                            height="1.5em"
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M8 3.5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5H4a.5.5 0 0 1 0-1h3.5V4a.5.5 0 0 1 .5-.5z"
+                            />
+                            <path
+                                fill-rule="evenodd"
+                                d="M7.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0V8z"
+                            />
+                        </svg>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul id="done" data-status="done" class="list-group">
+                            {% for task in done reversed %}
+                            <li class="list-group-item task-card d-flex">
+                                <a class="card-content" href="{% url 'update-task' task.id %}">
+                                    <div class="card-nameAndDropdownMenu">
+                                        <div class="card-name">{{ task.title }}</div>
+                                    </div>
+                                    <div class="card-metaData">
+                                        <div class="card-assigneeAndDueDate">
+                                            <div class="card-assignee">
+                                                {% if task.assignee %}
+                                                <img
+                                                    class="rounded-circle"
+                                                    width="20"
+                                                    height="20"
+                                                    src="{{ task.assignee.profile.profile_img.url }}"
+                                                    title="{{ task.assignee.username }}"
+                                                />
+                                                {% else %}
+                                                <svg
+                                                    class="bi bi-person-circle"
+                                                    width="1em"
+                                                    height="1em"
+                                                    viewBox="0 0 16 16"
+                                                    fill="currentColor"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path
+                                                        d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z"
+                                                    />
+                                                    <path fill-rule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"
+                                                    />
+                                                </svg>
+                                                {% endif %}
+                                            </div>
+                                            <div class="card-dueDate">
+                                                {% if task.due_date %} {{ task.due_date|date:"M d" }} {% else %}
+                                                <svg
+                                                    class="bi bi-calendar2-plus"
+                                                    width="1em"
+                                                    height="1em"
+                                                    viewBox="0 0 16 16"
+                                                    fill="currentColor"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M8 8a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H6a.5.5 0 0 1 0-1h1.5V8.5A.5.5 0 0 1 8 8z"
+                                                    />
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M7.5 10.5A.5.5 0 0 1 8 10h2a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0v-2z"
+                                                    />
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M14 2H2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zM2 1a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2z"
+                                                    />
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M3.5 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5zm9 0a.5.5 0 0 1 .5.5V1a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5z"
+                                                    />
+                                                    <path
+                                                        d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"
+                                                    />
+                                                </svg>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="card-actions">
+                                    <div class="dropdown">
+                                        <div
+                                            class="card-dropdownButton float-right"
+                                            id="dropdownMenuButton"
+                                            data-toggle="dropdown"
+                                        >
+                                            <svg
+                                                class="bi bi-three-dots"
+                                                width="1em"
+                                                height="1em"
+                                                viewBox="0 0 16 16"
+                                                fill="currentColor"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a
+                                                class="dropdown-item js-status-update"
+                                                data-taskid="{{ task.id }}"
+                                                data-status="T"
+                                                href="#"
+                                                >Todo</a
+                                            >
+                                            <a
+                                                class="dropdown-item js-status-update"
+                                                data-taskid="{{ task.id }}"
+                                                data-status="P"
+                                                href="#"
+                                                >In Progress</a
+                                            >
+                                            <div class="dropdown-divider"></div>
+                                            <a
+                                                class="dropdown-item text-danger js-task-delete"
+                                                data-taskid="{{ task.id }}"
+                                                href="#"
+                                                >Delete</a
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "tasks/base.html" %} {% block body %}
+<div class="row justify-content-center">
+    <main class="col-md-8 main">
+        <ul class="list-group list-group-flush project-list">
+            {% for project in projects reversed %}
+            <li class="list-group-item">
+                <a class="nav-link" href="{% url 'project' project.id %}">
+                    <h6>{{ project.title }}</h6>
+                    <div>
+                        {% for user in project.members.all %}
+                        <img
+                            class="rounded-circle"
+                            width="50"
+                            height="50"
+                            src="{{ user.profile.profile_img.url }}"
+                            title="{{ user.username }}"
+                        />
+                        {% endfor %}
+                    </div>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </main>
+</div>
+{% endblock %}

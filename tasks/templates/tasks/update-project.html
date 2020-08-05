@@ -1,0 +1,12 @@
+{% extends "tasks/base.html" %} {% block body %} {% load crispy_forms_tags %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form action="{% url 'update-project' project_id%}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">{{ project_form|crispy }}</div>
+            <button type="submit" class="btn btn-info">Update</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
