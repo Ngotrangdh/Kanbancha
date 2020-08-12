@@ -86,7 +86,7 @@ $(document).ready(function () {
 
     function postNewTask(status, project_id, title) {
         const request = new XMLHttpRequest();
-        request.open('POST', 'api/create-tasks/');
+        request.open('POST', 'ajax/create-task/');
         request.setRequestHeader('X-CSRFToken', csrftoken);
         request.onload = () => {
             window.location.reload();
@@ -100,7 +100,7 @@ $(document).ready(function () {
 
     function updateTaskStatus(taskId, newStatus) {
         const request = new XMLHttpRequest();
-        request.open('POST', 'api/update-task-status/');
+        request.open('POST', 'ajax/update-task-status/');
         request.setRequestHeader('X-CSRFToken', csrftoken);
         request.onload = () => {
             window.location.reload();
@@ -113,7 +113,7 @@ $(document).ready(function () {
 
     function deleteTask(taskId) {
         const request = new XMLHttpRequest();
-        request.open('POST', 'api/delete-task/');
+        request.open('POST', 'ajax/delete-task/');
         request.setRequestHeader('X-CSRFToken', csrftoken);
         request.onload = () => {
             window.location.reload();
@@ -125,7 +125,7 @@ $(document).ready(function () {
 
     function postNewComment(taskId, content) {
         const request = new XMLHttpRequest();
-        request.open('POST', 'api/create-comment/');
+        request.open('POST', 'ajax/create-comment/');
         request.setRequestHeader('X-CSRFToken', csrftoken);
         request.onload = (data) => {
             window.location.reload();
