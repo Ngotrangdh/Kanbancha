@@ -29,7 +29,7 @@ class Task(models.Model):
     description = models.TextField(blank=True)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     assignee = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="assignee", null=True, blank=True,
+        User, on_delete=models.CASCADE, related_name="tasks", null=True, blank=True,
     )
     assignor = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="assignor"

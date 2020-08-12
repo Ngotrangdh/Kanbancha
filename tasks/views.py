@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.contrib import messages
 from django.http import HttpResponse, Http404, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -10,7 +10,7 @@ from .forms import ProjectForm, TaskForm
 
 @login_required
 def index(request):
-    projects = request.user.project.all()
+    projects = get_list_or_404(Project, members=request.user)
     context = {"projects": projects, "profiles": Profile.objects.all()}
     return render(request, "tasks/index.html", context)
 
@@ -138,7 +138,7 @@ def delete_task(request):
 @login_required
 def create_comment(request):
     task_id = int(request.POST.get("task_id"))
-    task = Task.objects.get(pk=task_id)
+    task = get_object_or_404(Task, pk=task_id)
     comment = Comment.objects.create(
         commenter=request.user, content=request.POST.get("content"), task=task
     )
@@ -148,5 +148,5 @@ def create_comment(request):
 
 @login_required
 def my_tasks(request):
-    tasks = request.user.assignee.all()
+    tasks = get_list_or_404(Task, assignee=request.user)
     return render(request, "tasks/my-tasks.html", {"tasks": tasks})

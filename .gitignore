@@ -1,8 +1,6 @@
 #Mac
 .DS_Store
 
-#Kanban migration folder
-migrations/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
